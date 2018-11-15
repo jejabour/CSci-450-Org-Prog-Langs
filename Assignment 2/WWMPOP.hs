@@ -52,7 +52,6 @@ database = [ (1848, "Vanilla yogurt cups (4)",    188),
                 (2018, "Haskell programming book",  4495)
             ]
 
-
 -- Divides the given number by 100 to make cents out
 -- of the given number
 formatDollars :: Price -> String
