@@ -9,7 +9,6 @@ where
 -- instructor used these in his solution
 import Data.List ( delete, intercalate, intersect, (\\), elemIndex, findIndex)
 import Data.Char
-import Data.Random
 
 import SimpleHTML (
         HTML, ListType(..), LangType(..),
@@ -106,23 +105,28 @@ validExam (Quiz title (q:qs))
 --     letter <- ['A', 'B' .. lenQuestion q]]
 
 
+
+--     x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+--     x !! 5
+--     'F'
+
+
 -- makeKeyTest :: Exam -> [Int]
 -- makeKeyTest (Quiz _ questionList) = [number | number <- [1, 2 .. length questionList]]
 
-makeKeyTest3 :: Exam -> [(Int,Char)]
+makeKeyTest3 :: Exam -> [(Int,[Char])]
 makeKeyTest3 (Quiz _ (q:qs)) = 
-    [(number, letter) | number <- [1 .. length qs]]
+    [(number, letter) | number <- [1 .. length (q:qs)]]
     where
         letterList = [1 .. lenQuestion q]
-        letterList2 = [letter | letter <- map intToDigit letterList]
-        letter = sample $ randomElement letterList2
+        letter = [letter | letter <- map intToDigit letterList]
 
 
 -- makeKeyTest2 :: Exam -> [(Int,Char)]
 -- makeKeyTest2 (Quiz _ questionList) = 
 --     [(number, letter) | number <- [1 .. length questionList]]
 --         where 
---             letterlist = ['A', 'B' .. 'I']
+--             letterlist = ['A', 'B' .. 'J']
 --             letter = length questionList `elemIndex` 
 
 -- findCorrectNum :: Question -> Int -> (Int -> Int) -> Int
