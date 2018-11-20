@@ -38,6 +38,8 @@ correctChoice (Answer _ b)
 -- correctChoiceNum (Ask tag qtext (choice:choices)) 
 --     | not (correctChoice choice)  = Nothing
 --     | otherwise = findIndex (correctChoice choices)
+
+
     
 
 -- #A2
@@ -51,9 +53,9 @@ validQuestion (Ask as w (q:qs))
     |null as || null w || null qs = False
     |lenQuestion (Ask as w qs) < 2 = False
     |lenQuestion (Ask as w qs) > 10 = False
-    -- |trueChoices qs x /= 1 = False
+    -- |num == 1 = True
     |otherwise = True
-        -- where x = 0
+        -- where num = length getMaxim(maxim(map correctChoice qs))
 
 -- trueChoices :: Choice -> Int -> Int
 -- trueChoices (q:qs) x
@@ -110,39 +112,50 @@ validExam (Quiz title (q:qs))
 --     x !! 5
 --     'F'
 
+-- letterList = [1 .. lenQuestion q]
+-- letter =  map intToDigit letterList
+
 
 -- makeKeyTest :: Exam -> [Int]
 -- makeKeyTest (Quiz _ questionList) = [number | number <- [1, 2 .. length questionList]]
 
-makeKeyTest3 :: Exam -> [(Int,[Char])]
-makeKeyTest3 (Quiz _ (q:qs)) = 
-    [(number, letter) | number <- [1 .. length (q:qs)]]
+
+
+makeKey :: Exam -> [(Int,Char)]
+makeKey (Quiz _ qs) = 
+    [(number, letterList !! getMaxim (maxim boolList)) | number <- [1 .. length qs], boolList <- tflist]
     where
-        letterList = [1 .. lenQuestion q]
-        letter = [letter | letter <- map intToDigit letterList]
+        letterList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+        tflist = getChoiceListS qs        
+
+                
+getChoiceListS :: [Question] -> [[Bool]]
+getChoiceListS questions = map getChoiceList questions
+                
+getChoiceList :: Question -> [Bool]
+getChoiceList (Ask tags qtext choices) = map correctChoice choices
 
 
--- makeKeyTest2 :: Exam -> [(Int,Char)]
--- makeKeyTest2 (Quiz _ questionList) = 
---     [(number, letter) | number <- [1 .. length questionList]]
---         where 
---             letterlist = ['A', 'B' .. 'J']
---             letter = length questionList `elemIndex` 
+-- maximList :: [[Bool]] -> [(a, Int)]
+-- maximList maxi= map maxim maxi 
 
--- findCorrectNum :: Question -> Int -> (Int -> Int) -> Int
--- findCorrectNum (Ask _ _ c:cs) number f 
---             | val >= number = val
---             | otherwise = findCorrectNum (start + 1) number filter
---                 where  
---                 val = f start
 
--- findCorrectNum' :: Question -> Int
--- findCorrectNum' (Ask tag qtext (c:cs))
---     | correctChoice c = val
---     | otherwise = findCorrectNum' (Ask tag qtext cs) (succ val)
---         where val = 0
-    
+maxim :: (Ord a) => [a] -> (a, Int)
+maxim l = 
+  let pmaxim :: (Ord a) => [a] -> Int -> (a, Int) 
+      pmaxim [] _  = error "Empty list"  
+      pmaxim [x] xi = (x, xi)             
+      pmaxim (x:xs) xi                        
+        | x > t     = (x, xi)                     
+        | otherwise = (t, ti)                 
+        where (t, ti) = pmaxim xs (xi + 1)       
+  in pmaxim l 0                                   
 
+-- getMaximList :: [(a, Int)] -> Int
+-- getMaximList = map getMaxim
+
+getMaxim :: (a, Int) -> Int
+getMaxim (x, xi) = xi
 
 -- data Exam     = Quiz Title [Question] deriving Show
 -- data Question = Ask [Tag] QText [Choice] deriving Show
@@ -162,7 +175,10 @@ choice2html :: Choice -> HTML
 choice2html (Answer text _) = to_li text
 
 -- #B1
--- question2html :: Question -> HTML
+question2html :: Question -> HTML
+question2html (Ask tagList qtext choices) = to_li qtext ++ newline ++ (to_list UpLettered (concat (map choice2html choices)))
+    
+
 
 -- #B2
 -- exam2html :: Exam -> HTML
